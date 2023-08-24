@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:test_app/models/todo.dart';
 import 'package:test_app/models/todo_list.dart';
-import 'package:test_app/widgets/note_card.dart';
-import 'package:test_app/widgets/todo_widget.dart';
+import 'package:test_app/services/sql_datasource.dart';
+import 'package:test_app/widgets/todo_card.dart';
 import 'package:provider/provider.dart';
+import 'package:test_app/services/todo_datasource.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  GetIt.I.registerSingleton<TodoDataSource>(SQLDatasource());
+
   runApp(ChangeNotifierProvider(
       create: (context) => TodoList(), child: const TodoApp()));
 }
@@ -70,17 +75,18 @@ class _TodoHomePageState extends State<TodoHomePage> {
       builder: (builder) {
         return AlertDialog(
           title: const Text('Add To Do'),
-          content: const Column(
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Column(children: [
-                Text("Title"),
-                TextField(),
+                const Text("Title"),
+                TextField(controller: titleController),
               ]),
+              const SizedBox(height: 50),
               Column(
                 children: [
-                  Text("Title"),
-                  TextField(),
+                  const Text("Note"),
+                  TextField(controller: descriptionController),
                 ],
               )
             ],
@@ -92,6 +98,10 @@ class _TodoHomePageState extends State<TodoHomePage> {
               ),
               child: const Text('Add'),
               onPressed: () {
+                () async => await GetIt.I<TodoDataSource>().add(Todo(
+                    name: titleController.text,
+                    description: descriptionController.text,
+                    dateCreated: DateTime.now().toIso8601String()));
                 Navigator.of(context).pop();
               },
             ),
@@ -120,13 +130,19 @@ class _TodoHomePageState extends State<TodoHomePage> {
         title: Text(widget.title),
       ),
       body: Consumer<TodoList>(builder: (context, stateModel, child) {
-        return SingleChildScrollView(
-            child: Center(
-          child: Wrap(
-              children: stateModel.todos
-                  .map((item) => NoteCard(todo: item))
-                  .toList()),
-        ));
+        return RefreshIndicator(
+          onRefresh: stateModel.refresh,
+          child: SingleChildScrollView(
+              child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: stateModel.todos
+                    .map((item) => TodoCard(todo: item))
+                    .toList()),
+          )),
+        );
       }),
 
       floatingActionButton: FloatingActionButton(

@@ -2,13 +2,16 @@ class Todo {
   final String id;
   final String name;
   final String description;
+  final String dateCreated;
   final bool completed;
 
-  Todo(
-      {required this.name,
-      required this.description,
-      this.completed = false,
-      this.id = ""});
+  Todo({
+    this.id = "",
+    required this.name,
+    required this.description,
+    this.completed = false,
+    required this.dateCreated,
+  });
 
   @override
   String toString() {
@@ -21,6 +24,7 @@ class Todo {
       'id': id,
       'name': name,
       'description': description,
+      'dateCreated': dateCreated,
       'completed': completed ? 1 : 0,
     };
   }
