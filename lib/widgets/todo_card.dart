@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test_app/models/todo.dart';
+import 'package:test_app/models/todo_list.dart';
 
 class TodoCard extends StatelessWidget {
   final Todo todo;
@@ -43,11 +45,17 @@ class TodoCard extends StatelessWidget {
           Positioned(
             top: -40,
             left: 0,
-            child: Container(
-              transform: Matrix4.rotationZ(0.7853981633974483),
-              width: 50,
-              height: 50,
-              color: todo.completed ? Colors.green : Colors.grey,
+            child: GestureDetector(
+              onTap: () {
+                Provider.of<TodoList>(context, listen: false).check(todo);
+                print("Container clicked");
+              },
+              child: Container(
+                transform: Matrix4.rotationZ(0.7853981633974483),
+                width: 50,
+                height: 50,
+                color: todo.completed ? Colors.green : Colors.grey,
+              ),
             ),
           ),
         ],

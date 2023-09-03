@@ -17,4 +17,19 @@ class TodoList extends ChangeNotifier {
     _todos = await GetIt.I<TodoDataSource>().browse();
     notifyListeners();
   }
+
+  Future<void> add(Todo todo) async {
+    await GetIt.I<TodoDataSource>().add(todo);
+    notifyListeners();
+  }
+
+  Future<void> edit(Todo todo) async {
+    await GetIt.I<TodoDataSource>().edit(todo);
+    notifyListeners();
+  }
+
+  Future<void> check(Todo todo) async {
+    await GetIt.I<TodoDataSource>().edit(todo);
+    notifyListeners();
+  }
 }

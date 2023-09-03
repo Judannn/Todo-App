@@ -11,7 +11,7 @@ class SQLDatasource implements TodoDataSource {
     init = initialise();
   }
 
-  Future initialise() async {
+  Future<void> initialise() async {
     database = await openDatabase(
       join(await getDatabasesPath(), 'todo_data.db'),
       version: 1,
@@ -40,7 +40,7 @@ class SQLDatasource implements TodoDataSource {
               id: maps[index]['id'],
               name: maps[index]['name'],
               description: maps[index]['description'],
-              completed: maps[index]['completed'] == 1 ? true : false,
+              completed: maps[index]['completed'] == 1 ? false : true,
               dateCreated: maps[index]['dateCreated'],
             ));
   }
