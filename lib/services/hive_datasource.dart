@@ -2,6 +2,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:test_app/models/todo.dart';
 import 'package:test_app/services/todo_datasource.dart';
 
+enum ListFilter { complete, incomplete, all }
+
 class HiveDatasource implements TodoDataSource {
   late Future init;
 
@@ -24,10 +26,18 @@ class HiveDatasource implements TodoDataSource {
   }
 
   @override
-  Future<List<Todo>> browse() async {
+  Future<List<Todo>> browse(ListFilter filter) async {
     await init;
-    Box<Todo> box = Hive.box<Todo>('todos');
-    return box.values.toList();
+    List<Todo> toDos = Hive.box<Todo>('todos').values.toList();
+
+    switch (filter) {
+      case ListFilter.complete:
+        return toDos.where((todo) => todo.completed).toList();
+      case ListFilter.incomplete:
+        return toDos.where((todo) => !todo.completed).toList();
+      case ListFilter.all:
+        return toDos;
+    }
   }
 
   @override

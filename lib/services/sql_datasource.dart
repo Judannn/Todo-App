@@ -1,6 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:test_app/models/todo.dart';
+import 'package:test_app/services/hive_datasource.dart';
 import 'package:test_app/services/todo_datasource.dart';
 
 class SQLDatasource implements TodoDataSource {
@@ -30,7 +31,7 @@ class SQLDatasource implements TodoDataSource {
   }
 
   @override
-  Future<List<Todo>> browse() async {
+  Future<List<Todo>> browse(ListFilter filter) async {
     await init; //wait for init completion before attempting to fetch data
 
     List<Map<String, dynamic>> maps = await database.query('todos');

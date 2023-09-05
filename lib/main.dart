@@ -44,7 +44,7 @@ class TodoApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TodoHomePage(title: 'Home'),
+      home: const TodoHomePage(title: 'ToDos'),
     );
   }
 }
@@ -69,6 +69,13 @@ class TodoHomePage extends StatefulWidget {
 
 class _TodoHomePageState extends State<TodoHomePage> {
   @override
+  void initState() {
+    super.initState();
+    // Load todos from Hive when the app starts
+    Provider.of<TodoList>(context, listen: false).browse(ListFilter.all);
+  }
+
+  @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -84,27 +91,45 @@ class _TodoHomePageState extends State<TodoHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the TodoHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.title),
+            Row(children: [
+              Badge(
+                  label: Text(Provider.of<TodoList>(context, listen: false)
+                      .todoCount
+                      .toString()),
+                  child: const Icon(Icons.check_circle_outline)),
+              const SizedBox(width: 10),
+              Badge(
+                  label: Text(Provider.of<TodoList>(context, listen: false)
+                      .todoCount
+                      .toString()),
+                  child: const Icon(Icons.indeterminate_check_box_outlined)),
+            ])
+          ],
+        ),
       ),
       body: Consumer<TodoList>(builder: (context, stateModel, child) {
         return RefreshIndicator(
-          onRefresh: stateModel.browse,
+          onRefresh: () {
+            return stateModel.browse(ListFilter.all);
+          },
           child: SingleChildScrollView(
               child: Container(
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
                 const FilterBar(),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: stateModel.todos
-                            .map((item) => TodoCard(todo: item))
-                            .toList()),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: stateModel.todos
+                          .map((item) => TodoCard(todo: item))
+                          .toList()),
                 ),
               ],
             ),

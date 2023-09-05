@@ -25,6 +25,7 @@ class TodoCard extends StatelessWidget {
                   padding: const EdgeInsets.only(
                       top: 0, left: 20, right: 20, bottom: 0),
                   child: Text(todo.name,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.headlineSmall),
                 ),
                 const SizedBox(height: 20),
