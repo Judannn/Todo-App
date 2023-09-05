@@ -11,7 +11,7 @@ class Todo extends HiveObject {
   @HiveType(typeId: 3)
   final String dateCreated;
   @HiveType(typeId: 4)
-  final bool completed;
+  bool completed;
 
   Todo({
     this.id = "",

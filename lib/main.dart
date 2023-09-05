@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:test_app/models/todo_list.dart';
 import 'package:test_app/services/hive_datasource.dart';
 import 'package:test_app/widgets/add_form.dart';
+import 'package:test_app/widgets/filter_bar.dart';
 // import 'package:test_app/services/sql_datasource.dart';
 import 'package:test_app/widgets/todo_card.dart';
 import 'package:provider/provider.dart';
@@ -87,16 +88,26 @@ class _TodoHomePageState extends State<TodoHomePage> {
       ),
       body: Consumer<TodoList>(builder: (context, stateModel, child) {
         return RefreshIndicator(
-          onRefresh: stateModel.refresh,
+          onRefresh: stateModel.browse,
           child: SingleChildScrollView(
               child: Container(
             padding: const EdgeInsets.all(10),
-            child: Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: stateModel.todos
-                    .map((item) => TodoCard(todo: item))
-                    .toList()),
+            child: Column(
+              children: [
+                const FilterBar(),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: stateModel.todos
+                            .map((item) => TodoCard(todo: item))
+                            .toList()),
+                  ),
+                ),
+              ],
+            ),
           )),
         );
       }),

@@ -15,7 +15,7 @@ class TodoCard extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            width: 200,
+            width: (MediaQuery.of(context).size.width / 2 - 23),
             // height: 300,
             padding:
                 const EdgeInsets.only(top: 5, left: 20, right: 20, bottom: 10),
@@ -47,7 +47,8 @@ class TodoCard extends StatelessWidget {
             left: 0,
             child: GestureDetector(
               onTap: () {
-                Provider.of<TodoList>(context, listen: false).check(todo);
+                todo.completed = true;
+                Provider.of<TodoList>(context, listen: false).edit(todo);
                 print("Container clicked");
               },
               child: Container(

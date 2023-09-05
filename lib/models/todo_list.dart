@@ -13,22 +13,18 @@ class TodoList extends ChangeNotifier {
 
   int get todoCount => _todos.length;
 
-  Future<void> refresh() async {
+  Future<void> browse() async {
     _todos = await GetIt.I<TodoDataSource>().browse();
     notifyListeners();
   }
 
   Future<void> add(Todo todo) async {
     await GetIt.I<TodoDataSource>().add(todo);
+    await browse();
     notifyListeners();
   }
 
   Future<void> edit(Todo todo) async {
-    await GetIt.I<TodoDataSource>().edit(todo);
-    notifyListeners();
-  }
-
-  Future<void> check(Todo todo) async {
     await GetIt.I<TodoDataSource>().edit(todo);
     notifyListeners();
   }
