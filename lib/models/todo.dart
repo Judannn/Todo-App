@@ -1,9 +1,14 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-@HiveType(typeId: 0)
 class Todo extends HiveObject {
   @HiveType(typeId: 0)
-  final String id;
+  late String? internalID;
+
+  String get id {
+    if (key != null) return key.toString();
+    return internalID ?? "Not Provided";
+  }
+
   @HiveType(typeId: 1)
   final String name;
   @HiveType(typeId: 2)
@@ -14,11 +19,11 @@ class Todo extends HiveObject {
   bool completed;
 
   Todo({
-    this.id = "",
     required this.name,
     required this.description,
-    this.completed = false,
     required this.dateCreated,
+    this.completed = false,
+    this.internalID = "",
   });
 
   @override
@@ -36,13 +41,30 @@ class Todo extends HiveObject {
       'completed': completed ? 1 : 0,
     };
   }
+
+  factory Todo.fromMap(Map<String, dynamic> mapData) {
+    bool completed;
+
+    if (mapData['completed'] is int) {
+      completed = mapData['completed'] != 0;
+    } else {
+      completed = mapData['completed'] ?? false;
+    }
+
+    Todo todo = Todo(
+        name: mapData['name'],
+        description: mapData['description'],
+        completed: completed,
+        dateCreated: mapData['dateCreated']);
+    return todo;
+  }
 }
 
 class ToDoAdaptor extends TypeAdapter<Todo> {
   @override
   Todo read(BinaryReader reader) {
     return Todo(
-        id: reader.read(),
+        internalID: reader.read(),
         name: reader.read(),
         description: reader.read(),
         dateCreated: reader.read(),

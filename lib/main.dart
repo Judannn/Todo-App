@@ -7,11 +7,11 @@ import 'package:test_app/widgets/filter_bar.dart';
 // import 'package:test_app/services/sql_datasource.dart';
 import 'package:test_app/widgets/todo_card.dart';
 import 'package:provider/provider.dart';
-import 'package:test_app/services/todo_datasource.dart';
+import 'package:test_app/services/datasource.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  GetIt.I.registerSingleton<TodoDataSource>(HiveDatasource());
+  GetIt.I.registerSingleton<DataSource>(HiveDatasource());
 
   runApp(ChangeNotifierProvider(
       create: (context) => TodoList(), child: const TodoApp()));
@@ -98,13 +98,13 @@ class _TodoHomePageState extends State<TodoHomePage> {
             Row(children: [
               Badge(
                   label: Text(Provider.of<TodoList>(context, listen: false)
-                      .todoCount
+                      .completeTodo
                       .toString()),
                   child: const Icon(Icons.check_circle_outline)),
               const SizedBox(width: 10),
               Badge(
                   label: Text(Provider.of<TodoList>(context, listen: false)
-                      .todoCount
+                      .incompleteTodo
                       .toString()),
                   child: const Icon(Icons.indeterminate_check_box_outlined)),
             ])

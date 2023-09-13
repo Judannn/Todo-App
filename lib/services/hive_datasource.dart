@@ -1,10 +1,10 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:test_app/models/todo.dart';
-import 'package:test_app/services/todo_datasource.dart';
+import 'package:test_app/services/datasource.dart';
 
 enum ListFilter { complete, incomplete, all }
 
-class HiveDatasource implements TodoDataSource {
+class HiveDatasource implements DataSource {
   late Future init;
 
   HiveDatasource() {

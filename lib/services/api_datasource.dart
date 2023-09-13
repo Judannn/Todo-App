@@ -1,49 +1,45 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:test_app/models/todo.dart';
+import 'package:test_app/firebase_options.dart';
 import 'package:test_app/services/hive_datasource.dart';
 import 'package:test_app/services/datasource.dart';
 
-class SQLDatasource implements DataSource {
-  late Database database;
+class ApiDatasource implements DataSource {
+  late FirebaseDatabase database;
   late Future init;
 
-  SQLDatasource() {
+  ApiDatasource() {
     init = initialise();
   }
 
   Future<void> initialise() async {
-    database = await openDatabase(
-      join(await getDatabasesPath(), 'todo_data.db'),
-      version: 1,
-      onCreate: (db, version) {
-        return db.execute(
-            'CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, name TEXT, description TEXT, completed INTEGER, dateCreated TEXT )');
-      },
-    );
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currenPlatform);
+      database = 
+    )
   }
 
   @override
   Future<bool> add(Todo todo) async {
-    await init;
-    final int id = await database.insert('todos', todo.toMap());
-    return id > 0;
+
   }
 
   @override
   Future<List<Todo>> browse(ListFilter filter) async {
-    await init; //wait for init completion before attempting to fetch data
-
-    List<Map<String, dynamic>> maps = await database.query('todos');
-    return List.generate(
-        maps.length,
-        (index) => Todo(
-              internalID: maps[index]['id'],
-              name: maps[index]['name'],
-              description: maps[index]['description'],
-              completed: maps[index]['completed'] == 1 ? false : true,
-              dateCreated: maps[index]['dateCreated'],
-            ));
+    DataSnapshot snapshot = await database.ref().child('todos').get();
+    
+    List<Todo> todos = <Todo>[];
+    if(snapshot.exists){
+      Map<dynamic, dynamic> snapshotValue = snapshot.value as Map;
+      if(snapshotValue.isNotEmpty){
+        
+        snapshotValue.forEach((key,value) {
+          value['id'] = key;
+          todos.add(Todo.fromMap(value));
+        });
+      } 
+    }
   }
 
   @override
