@@ -15,76 +15,116 @@ class ApiDatasource implements DataSource {
 
   Future<void> initialise() async {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currenPlatform);
-      database = 
-    )
+        options: DefaultFirebaseOptions.currentPlatform);
+    database = FirebaseDatabase.instance;
   }
 
   @override
-  Future<bool> add(Todo todo) async {
-
+  Future<bool> add(Todo todo) {
+    // TODO: implement add
+    throw UnimplementedError();
   }
 
   @override
   Future<List<Todo>> browse(ListFilter filter) async {
     DataSnapshot snapshot = await database.ref().child('todos').get();
-    
+
     List<Todo> todos = <Todo>[];
-    if(snapshot.exists){
+    if (snapshot.exists) {
       Map<dynamic, dynamic> snapshotValue = snapshot.value as Map;
-      if(snapshotValue.isNotEmpty){
-        
-        snapshotValue.forEach((key,value) {
+      if (snapshotValue.isNotEmpty) {
+        snapshotValue.forEach((key, value) {
           value['id'] = key;
           todos.add(Todo.fromMap(value));
         });
-      } 
+      }
     }
+    return todos;
   }
 
   @override
-  Future<bool> delete(Todo todo) async {
-    await init;
-    final int rowsDeleted = await database.delete(
-      'todos',
-      where: 'id = ?',
-      whereArgs: [todo.id],
-    );
-    return rowsDeleted > 0;
+  Future<bool> delete(Todo todo) {
+    // TODO: implement delete
+    throw UnimplementedError();
   }
 
   @override
-  Future<bool> edit(Todo todo) async {
-    await init;
-    final int rowsUpdated = await database.update(
-      'todos',
-      todo.toMap(),
-      where: 'id = ?',
-      whereArgs: [todo.id],
-    );
-    return rowsUpdated > 0;
+  Future<bool> edit(Todo todo) {
+    // TODO: implement edit
+    throw UnimplementedError();
   }
 
   @override
-  Future<Todo> read(String id) async {
-    await init;
-    List<Map<String, dynamic>> maps = await database.query(
-      'todos',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (maps.isEmpty) {
-      return Todo(name: "", description: "", dateCreated: "");
-    }
-
-    Map<String, dynamic> todoMap = maps.first;
-    return Todo(
-      internalID: todoMap['id'],
-      name: todoMap['name'],
-      description: todoMap['description'],
-      completed: todoMap['completed'] == 1,
-      dateCreated: todoMap['dateCreated'],
-    );
+  Future<Todo> read(String id) {
+    // TODO: implement read
+    throw UnimplementedError();
   }
+
+  // @override
+  // Future<bool> add(Todo todo) async {
+
+  // }
+
+  // @override
+  // Future<List<Todo>> browse(ListFilter filter) async {
+  //   DataSnapshot snapshot = await database.ref().child('todos').get();
+
+  //   List<Todo> todos = <Todo>[];
+  //   if(snapshot.exists){
+  //     Map<dynamic, dynamic> snapshotValue = snapshot.value as Map;
+  //     if(snapshotValue.isNotEmpty){
+
+  //       snapshotValue.forEach((key,value) {
+  //         value['id'] = key;
+  //         todos.add(Todo.fromMap(value));
+  //       });
+  //     }
+  //   }
+  // }
+
+  // @override
+  // Future<bool> delete(Todo todo) async {
+  //   await init;
+  //   final int rowsDeleted = await database.delete(
+  //     'todos',
+  //     where: 'id = ?',
+  //     whereArgs: [todo.id],
+  //   );
+  //   return rowsDeleted > 0;
+  // }
+
+  // @override
+  // Future<bool> edit(Todo todo) async {
+  //   await init;
+  //   final int rowsUpdated = await database.update(
+  //     'todos',
+  //     todo.toMap(),
+  //     where: 'id = ?',
+  //     whereArgs: [todo.id],
+  //   );
+  //   return rowsUpdated > 0;
+  // }
+
+  // @override
+  // Future<Todo> read(String id) async {
+  //   await init;
+  //   List<Map<String, dynamic>> maps = await database.query(
+  //     'todos',
+  //     where: 'id = ?',
+  //     whereArgs: [id],
+  //   );
+
+  //   if (maps.isEmpty) {
+  //     return Todo(name: "", description: "", dateCreated: "");
+  //   }
+
+  //   Map<String, dynamic> todoMap = maps.first;
+  //   return Todo(
+  //     internalID: todoMap['id'],
+  //     name: todoMap['name'],
+  //     description: todoMap['description'],
+  //     completed: todoMap['completed'] == 1,
+  //     dateCreated: todoMap['dateCreated'],
+  //   );
+  // }
 }

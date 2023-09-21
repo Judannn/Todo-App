@@ -1,17 +1,46 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:test_app/models/todo_list.dart';
 import 'package:test_app/services/hive_datasource.dart';
+import 'package:test_app/services/sql_datasource.dart';
 import 'package:test_app/widgets/add_form.dart';
 import 'package:test_app/widgets/filter_bar.dart';
 // import 'package:test_app/services/sql_datasource.dart';
 import 'package:test_app/widgets/todo_card.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/services/datasource.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  GetIt.I.registerSingleton<DataSource>(HiveDatasource());
+
+  DataSource dataSource;
+
+  //Check what platform and adjust datasource accordingly
+
+  // if (kIsWeb) {
+  //   dataSource = ApiDatasource();
+  // } else if (Platform.isAndroid) {
+  //   dataSource = HiveDatasource();
+  // } else if (Platform.isIOS) {
+  //   dataSource = SQLDatasource();
+  // } else if (Platform.isFuchsia) {
+  //   dataSource = HiveDatasource();
+  // } else if (Platform.isLinux) {
+  //   dataSource = ApiDatasource();
+  // } else if (Platform.isWindows) {
+  //   dataSource = HiveDatasource();
+  // } else if (Platform.isMacOS) {
+  //   dataSource = HiveDatasource();
+  // } else {
+  //   dataSource = HiveDatasource();
+  // }
+
+  dataSource = SQLDatasource();
+
+  GetIt.I.registerSingleton<DataSource>(dataSource);
 
   runApp(ChangeNotifierProvider(
       create: (context) => TodoList(), child: const TodoApp()));
@@ -107,6 +136,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                       .incompleteTodo
                       .toString()),
                   child: const Icon(Icons.indeterminate_check_box_outlined)),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
             ])
           ],
         ),
@@ -128,7 +158,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                       spacing: 10,
                       runSpacing: 10,
                       children: stateModel.todos
-                          .map((item) => TodoCard(todo: item))
+                          .map((item) => TodoCard(toDo: item))
                           .toList()),
                 ),
               ],

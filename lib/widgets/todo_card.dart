@@ -4,9 +4,9 @@ import 'package:test_app/models/todo.dart';
 import 'package:test_app/widgets/edit_form.dart';
 
 class TodoCard extends StatelessWidget {
-  final Todo todo;
+  final Todo toDo;
 
-  const TodoCard({super.key, required this.todo});
+  const TodoCard({super.key, required this.toDo});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class TodoCard extends StatelessWidget {
             context: context,
             builder: (builder) {
               return EditForm(
-                todo: todo,
+                toDo: toDo,
               );
             });
       },
@@ -29,7 +29,7 @@ class TodoCard extends StatelessWidget {
               border: Border(
             left: BorderSide(
               //                   <--- right side
-              color: todo.completed ? Colors.green : Colors.grey,
+              color: toDo.completed ? Colors.green : Colors.grey,
               width: 5.0,
             ),
           )),
@@ -40,7 +40,7 @@ class TodoCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.only(
                     top: 0, left: 20, right: 20, bottom: 0),
-                child: Text(todo.name,
+                child: Text(toDo.name,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineSmall),
               ),
@@ -48,7 +48,7 @@ class TodoCard extends StatelessWidget {
               Expanded(
                 child: Container(
                   alignment: Alignment.topLeft,
-                  child: Text(todo.description,
+                  child: Text(toDo.description,
                       style: Theme.of(context).textTheme.bodySmall),
                 ),
               ),
@@ -57,7 +57,7 @@ class TodoCard extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                     DateFormat.yMMMEd()
-                        .format(DateTime.parse(todo.dateCreated)),
+                        .format(DateTime.parse(toDo.dateCreated)),
                     style: Theme.of(context).textTheme.labelSmall),
               ),
             ],

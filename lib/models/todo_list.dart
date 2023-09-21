@@ -28,6 +28,13 @@ class TodoList extends ChangeNotifier {
 
   Future<void> edit(Todo todo) async {
     await GetIt.I<DataSource>().edit(todo);
+    await browse(ListFilter.all);
+    notifyListeners();
+  }
+
+  Future<void> delete(Todo todo) async {
+    await GetIt.I<DataSource>().delete(todo);
+    await browse(ListFilter.all);
     notifyListeners();
   }
 }

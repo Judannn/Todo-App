@@ -15,6 +15,7 @@ class HiveDatasource implements DataSource {
     await Hive.initFlutter();
     Hive.registerAdapter(ToDoAdaptor());
     await Hive.openBox<Todo>('todos');
+    // Hive.deleteBoxFromDisk('todos');
   }
 
   @override
@@ -50,7 +51,7 @@ class HiveDatasource implements DataSource {
   @override
   Future<bool> edit(Todo todo) async {
     await init;
-    todo.save();
+    Hive.box<Todo>('todos').putAt(int.parse(todo.internalID ?? ""), todo);
     return true;
   }
 

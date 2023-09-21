@@ -26,7 +26,9 @@ class SQLDatasource implements DataSource {
   @override
   Future<bool> add(Todo todo) async {
     await init;
-    final int id = await database.insert('todos', todo.toMap());
+    Map<String, dynamic> todoMap = todo.toMap();
+    todoMap.remove('id');
+    final int id = await database.insert('todos', todoMap);
     return id > 0;
   }
 
@@ -38,10 +40,10 @@ class SQLDatasource implements DataSource {
     return List.generate(
         maps.length,
         (index) => Todo(
-              internalID: maps[index]['id'],
+              internalID: maps[index]['id'].toString(),
               name: maps[index]['name'],
               description: maps[index]['description'],
-              completed: maps[index]['completed'] == 1 ? false : true,
+              completed: maps[index]['completed'] == 1 ? true : false,
               dateCreated: maps[index]['dateCreated'],
             ));
   }

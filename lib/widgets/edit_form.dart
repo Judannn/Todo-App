@@ -5,25 +5,21 @@ import 'package:test_app/models/todo.dart';
 import '../models/todo_list.dart';
 
 class EditForm extends StatefulWidget {
-  const EditForm({super.key, required this.todo});
-  final Todo todo;
+  const EditForm({super.key, required this.toDo});
+  final Todo toDo;
 
   @override
-  State<EditForm> createState() => _EditForm(todo.completed);
+  State<EditForm> createState() => _EditForm();
 }
 
 class _EditForm extends State<EditForm> {
-  _EditForm(this.completed);
-
-  bool completed;
-
   @override
   Widget build(BuildContext context) {
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
 
-    titleController.text = widget.todo.name;
-    descriptionController.text = widget.todo.description;
+    titleController.text = widget.toDo.name;
+    descriptionController.text = widget.toDo.description;
 
     return AlertDialog(
       title: const Text('Edit To Do'),
@@ -42,24 +38,20 @@ class _EditForm extends State<EditForm> {
             ],
           ),
           const SizedBox(height: 50),
-          SegmentedButton<bool>(
-            segments: const <ButtonSegment<bool>>[
-              ButtonSegment<bool>(value: true, label: Text('Complete')),
-              ButtonSegment<bool>(value: false, label: Text('Incomplete')),
-            ],
-            selected: <bool>{completed},
-            onSelectionChanged: (Set<bool> newSelection) {
-              setState(() {
-                // By default there is only a single segment that can be
-                // selected at one time, so its value is always the first
-                // item in the selected set.
-                completed = newSelection.first;
-              });
-            },
-          ),
         ],
       ),
       actions: <Widget>[
+        TextButton(
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelLarge,
+            ),
+            child: const Text('Delete'),
+            onPressed: () {
+              Provider.of<TodoList>(context, listen: false).delete(widget.toDo);
+              descriptionController.clear();
+              titleController.clear();
+              Navigator.pop(context);
+            }),
         TextButton(
             onPressed: () {
               Navigator.pop(context);
@@ -72,14 +64,15 @@ class _EditForm extends State<EditForm> {
             child: const Text('Save'),
             onPressed: () {
               Provider.of<TodoList>(context, listen: false).edit(Todo(
+                  internalID: widget.toDo.key.toString(),
                   name: titleController.text,
                   description: descriptionController.text,
-                  dateCreated: widget.todo.dateCreated,
-                  completed: completed));
-              Navigator.pop(context);
+                  dateCreated: widget.toDo.dateCreated,
+                  completed: widget.toDo.completed));
               descriptionController.clear();
               titleController.clear();
-            })
+              Navigator.pop(context);
+            }),
       ],
     );
   }

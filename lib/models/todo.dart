@@ -52,6 +52,7 @@ class Todo extends HiveObject {
     }
 
     Todo todo = Todo(
+        internalID: mapData['id'],
         name: mapData['name'],
         description: mapData['description'],
         completed: completed,
