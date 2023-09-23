@@ -13,6 +13,14 @@ class EditForm extends StatefulWidget {
 }
 
 class _EditForm extends State<EditForm> {
+  bool isCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isCompleted = widget.toDo.completed;
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController titleController = TextEditingController();
@@ -22,7 +30,34 @@ class _EditForm extends State<EditForm> {
     descriptionController.text = widget.toDo.description;
 
     return AlertDialog(
-      title: const Text('Edit To Do'),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Edit'),
+          Switch(
+              trackColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                if (isCompleted) {
+                  return Colors.green;
+                }
+                return null;
+              }),
+              value: isCompleted,
+              thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                  (Set<MaterialState> states) {
+                if (isCompleted) {
+                  return const Icon(Icons.check_rounded);
+                }
+                return const Icon(Icons
+                    .close_rounded); // All other states will use the default thumbIcon.
+              }),
+              onChanged: ((value) {
+                setState(() {
+                  isCompleted = value;
+                });
+              })),
+        ],
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -47,7 +82,17 @@ class _EditForm extends State<EditForm> {
             ),
             child: const Text('Delete'),
             onPressed: () {
-              Provider.of<TodoList>(context, listen: false).delete(widget.toDo);
+              Map<String, dynamic> todoMap = {
+                "id": widget.toDo.internalID,
+                "key": widget.toDo.key.toString(),
+                "name": widget.toDo.name,
+                "description": widget.toDo.description,
+                "dateCreated": DateTime.now().toIso8601String(),
+                "completed": widget.toDo.completed,
+              };
+              Provider.of<TodoList>(context, listen: false).delete(todoMap);
+
+              // Cleanup
               descriptionController.clear();
               titleController.clear();
               Navigator.pop(context);
@@ -63,12 +108,17 @@ class _EditForm extends State<EditForm> {
             ),
             child: const Text('Save'),
             onPressed: () {
-              Provider.of<TodoList>(context, listen: false).edit(Todo(
-                  internalID: widget.toDo.key.toString(),
-                  name: titleController.text,
-                  description: descriptionController.text,
-                  dateCreated: widget.toDo.dateCreated,
-                  completed: widget.toDo.completed));
+              Map<String, dynamic> todoMap = {
+                "id": widget.toDo.internalID,
+                "key": widget.toDo.key.toString(),
+                "name": titleController.text,
+                "description": descriptionController.text,
+                "dateCreated": DateTime.now().toIso8601String(),
+                "completed": isCompleted,
+              };
+              Provider.of<TodoList>(context, listen: false).edit(todoMap);
+
+              // Cleanup
               descriptionController.clear();
               titleController.clear();
               Navigator.pop(context);

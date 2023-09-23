@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:test_app/models/todo.dart';
 import 'package:test_app/firebase_options.dart';
-import 'package:test_app/services/hive_datasource.dart';
 import 'package:test_app/services/datasource.dart';
 
 class ApiDatasource implements DataSource {
@@ -20,13 +19,7 @@ class ApiDatasource implements DataSource {
   }
 
   @override
-  Future<bool> add(Todo todo) {
-    // TODO: implement add
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<Todo>> browse(ListFilter filter) async {
+  Future<List<Todo>> browse() async {
     DataSnapshot snapshot = await database.ref().child('todos').get();
 
     List<Todo> todos = <Todo>[];
@@ -43,20 +36,29 @@ class ApiDatasource implements DataSource {
   }
 
   @override
-  Future<bool> delete(Todo todo) {
-    // TODO: implement delete
+  Future<Todo> read(String id) {
+    // TODO: implement read
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> edit(Todo todo) {
+  Future<bool> edit(Map<String, dynamic> todoMap) {
     // TODO: implement edit
     throw UnimplementedError();
   }
 
   @override
-  Future<Todo> read(String id) {
-    // TODO: implement read
+  Future<bool> add(Map<String, dynamic> map) async {
+    map['completed'] = false;
+    var ref = database.ref('todos').push();
+    map['id'] = ref.key;
+    await ref.set(map);
+    return true;
+  }
+
+  @override
+  Future<bool> delete(Map<String, dynamic> todoMap) {
+    // TODO: implement delete
     throw UnimplementedError();
   }
 

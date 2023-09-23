@@ -1,44 +1,20 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:test_app/models/todo_list.dart';
-import 'package:test_app/services/hive_datasource.dart';
-import 'package:test_app/services/sql_datasource.dart';
+import 'package:test_app/services/api_datasource.dart';
 import 'package:test_app/widgets/add_form.dart';
 import 'package:test_app/widgets/filter_bar.dart';
 // import 'package:test_app/services/sql_datasource.dart';
 import 'package:test_app/widgets/todo_card.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/services/datasource.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   DataSource dataSource;
 
-  //Check what platform and adjust datasource accordingly
-
-  // if (kIsWeb) {
-  //   dataSource = ApiDatasource();
-  // } else if (Platform.isAndroid) {
-  //   dataSource = HiveDatasource();
-  // } else if (Platform.isIOS) {
-  //   dataSource = SQLDatasource();
-  // } else if (Platform.isFuchsia) {
-  //   dataSource = HiveDatasource();
-  // } else if (Platform.isLinux) {
-  //   dataSource = ApiDatasource();
-  // } else if (Platform.isWindows) {
-  //   dataSource = HiveDatasource();
-  // } else if (Platform.isMacOS) {
-  //   dataSource = HiveDatasource();
-  // } else {
-  //   dataSource = HiveDatasource();
-  // }
-
-  dataSource = SQLDatasource();
+  dataSource = DataSource();
 
   GetIt.I.registerSingleton<DataSource>(dataSource);
 
@@ -97,12 +73,12 @@ class TodoHomePage extends StatefulWidget {
 }
 
 class _TodoHomePageState extends State<TodoHomePage> {
-  @override
-  void initState() {
-    super.initState();
-    // Load todos from Hive when the app starts
-    Provider.of<TodoList>(context, listen: false).browse(ListFilter.all);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Load todos from Hive when the app starts
+  //   Provider.of<TodoList>(context, listen: false).browse(ListFilter.all);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -121,23 +97,8 @@ class _TodoHomePageState extends State<TodoHomePage> {
         // Here we take the value from the TodoHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(widget.title),
-            Row(children: [
-              Badge(
-                  label: Text(Provider.of<TodoList>(context, listen: false)
-                      .completeTodo
-                      .toString()),
-                  child: const Icon(Icons.check_circle_outline)),
-              const SizedBox(width: 10),
-              Badge(
-                  label: Text(Provider.of<TodoList>(context, listen: false)
-                      .incompleteTodo
-                      .toString()),
-                  child: const Icon(Icons.indeterminate_check_box_outlined)),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
-            ])
           ],
         ),
       ),
@@ -151,7 +112,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                const FilterBar(),
+                FilterBar(),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Wrap(

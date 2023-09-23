@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/models/todo_list.dart';
-import 'package:test_app/services/hive_datasource.dart';
+import 'package:test_app/services/datasource.dart';
 
 class FilterBar extends StatefulWidget {
   const FilterBar({super.key});
@@ -18,39 +18,59 @@ class _FilterBarState extends State<FilterBar> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        FilterChip(
-            selected: completeSelected,
-            onSelected: (bool selected) {
-              setState(() {
-                completeSelected = selected;
-                if (selected) {
-                  incompleteSelected = false;
-                  Provider.of<TodoList>(context, listen: false)
-                      .browse(ListFilter.complete);
-                } else {
-                  Provider.of<TodoList>(context, listen: false)
-                      .browse(ListFilter.all);
-                }
-              });
-            },
-            label: const Text('Complete')),
+        //     Badge(
+        // label: Text(Provider.of<TodoList>(context, listen: false)
+        //     .completeTodo
+        //     .toString()),
+        // child:
+        Badge(
+          textColor: Colors.white,
+          backgroundColor: const Color(0xff79747E),
+          label: Text(Provider.of<TodoList>(context, listen: false)
+              .completeTodo
+              .toString()),
+          child: FilterChip(
+              selected: completeSelected,
+              onSelected: (bool selected) {
+                setState(() {
+                  completeSelected = selected;
+                  if (selected) {
+                    incompleteSelected = false;
+                    Provider.of<TodoList>(context, listen: false)
+                        .browse(ListFilter.complete);
+                  } else {
+                    Provider.of<TodoList>(context, listen: false)
+                        .browse(ListFilter.all);
+                  }
+                });
+              },
+              label: const Text('Complete')),
+        ),
         const SizedBox(width: 10),
-        FilterChip(
-            selected: incompleteSelected,
-            onSelected: (bool selected) {
-              setState(() {
-                incompleteSelected = selected;
-                if (selected) {
-                  completeSelected = false;
-                  Provider.of<TodoList>(context, listen: false)
-                      .browse(ListFilter.incomplete);
-                } else {
-                  Provider.of<TodoList>(context, listen: false)
-                      .browse(ListFilter.all);
-                }
-              });
-            },
-            label: const Text('Incomplete')),
+        Badge(
+          textColor: Colors.white,
+          backgroundColor: const Color(0xff79747E),
+          label: Text(Provider.of<TodoList>(context, listen: false)
+              .incompleteTodo
+              .toString()),
+          child: FilterChip(
+              iconTheme: IconThemeData(),
+              selected: incompleteSelected,
+              onSelected: (bool selected) {
+                setState(() {
+                  incompleteSelected = selected;
+                  if (selected) {
+                    completeSelected = false;
+                    Provider.of<TodoList>(context, listen: false)
+                        .browse(ListFilter.incomplete);
+                  } else {
+                    Provider.of<TodoList>(context, listen: false)
+                        .browse(ListFilter.all);
+                  }
+                });
+              },
+              label: const Text('Incomplete')),
+        ),
       ],
     );
   }

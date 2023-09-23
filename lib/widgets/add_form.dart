@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test_app/models/todo.dart';
 
 import '../models/todo_list.dart';
 
@@ -42,10 +41,15 @@ class AddForm extends StatelessWidget {
             ),
             child: const Text('Add'),
             onPressed: () {
-              Provider.of<TodoList>(context, listen: false).add(Todo(
-                  name: titleController.text,
-                  description: descriptionController.text,
-                  dateCreated: DateTime.now().toIso8601String()));
+              Map<String, dynamic> todoMap = {
+                "name": titleController.text,
+                "description": descriptionController.text,
+                "dateCreated": DateTime.now().toIso8601String(),
+                "completed": false,
+              };
+              Provider.of<TodoList>(context, listen: false).add(todoMap);
+
+              // Cleanup
               Navigator.pop(context);
               descriptionController.clear();
               titleController.clear();
