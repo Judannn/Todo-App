@@ -11,10 +11,9 @@ enum ListFilter { complete, incomplete, all }
 //Interface for all
 abstract class DataSource {
   Future<List<Todo>> browse();
-  Future<Todo> read(String id);
-  Future<bool> edit(Map<String, dynamic> todo);
-  Future<bool> add(Map<String, dynamic> todo);
-  Future<bool> delete(Map<String, dynamic> todo);
+  Future<void> edit(Todo todo);
+  Future<void> add(Todo todo);
+  Future<void> delete(Todo todo);
 
   factory DataSource() {
     //Check what platform and adjust datasource accordingly

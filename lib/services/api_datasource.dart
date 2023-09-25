@@ -20,15 +20,16 @@ class ApiDatasource implements DataSource {
 
   @override
   Future<List<Todo>> browse() async {
-    DataSnapshot snapshot = await database.ref().child('todos').get();
-
+    await init;
     List<Todo> todos = <Todo>[];
+    DataSnapshot snapshot = await database.ref('todos').get();
     if (snapshot.exists) {
       Map<dynamic, dynamic> snapshotValue = snapshot.value as Map;
       if (snapshotValue.isNotEmpty) {
-        snapshotValue.forEach((key, value) {
-          value['id'] = key;
-          todos.add(Todo.fromMap(value));
+        snapshotValue.forEach((key, map) {
+          map['id'] = key;
+          map['completed'] = map['completed'] == 1 ? true : false;
+          todos.add(Todo.fromMap(map));
         });
       }
     }
@@ -36,97 +37,38 @@ class ApiDatasource implements DataSource {
   }
 
   @override
-  Future<Todo> read(String id) {
-    // TODO: implement read
-    throw UnimplementedError();
+  Future<void> edit(Todo todo) async {
+    await init;
+    // Get a reference to the specific todo by its ID
+    var ref = database.ref('todos').child(todo.id);
+    // Prep map
+    Map<String, dynamic> todoMap = todo.toMap();
+    todoMap['completed'] = todoMap['completed'] ? 1 : 0;
+    todoMap.remove('dateCreated');
+    // Update the todo with the new data
+    await ref.set(todoMap);
   }
 
   @override
-  Future<bool> edit(Map<String, dynamic> todoMap) {
-    // TODO: implement edit
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> add(Map<String, dynamic> map) async {
-    map['completed'] = false;
+  Future<void> add(Todo todo) async {
+    await init;
+    // Get a reference to the specific todo by its ID
     var ref = database.ref('todos').push();
-    map['id'] = ref.key;
-    await ref.set(map);
-    return true;
+    // Prep map
+    Map<String, dynamic> todoMap = todo.toMap();
+    todoMap['id'] = ref.key;
+    todoMap['completed'] = false;
+    todoMap.remove('dateCreated');
+    // Add the todo
+    await ref.set(todoMap);
   }
 
   @override
-  Future<bool> delete(Map<String, dynamic> todoMap) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<void> delete(Todo todo) async {
+    await init;
+    // Get a reference to the specific todo by its ID
+    var ref = database.ref('todos').child(todo.id);
+    // Delete the todo
+    await ref.remove();
   }
-
-  // @override
-  // Future<bool> add(Todo todo) async {
-
-  // }
-
-  // @override
-  // Future<List<Todo>> browse(ListFilter filter) async {
-  //   DataSnapshot snapshot = await database.ref().child('todos').get();
-
-  //   List<Todo> todos = <Todo>[];
-  //   if(snapshot.exists){
-  //     Map<dynamic, dynamic> snapshotValue = snapshot.value as Map;
-  //     if(snapshotValue.isNotEmpty){
-
-  //       snapshotValue.forEach((key,value) {
-  //         value['id'] = key;
-  //         todos.add(Todo.fromMap(value));
-  //       });
-  //     }
-  //   }
-  // }
-
-  // @override
-  // Future<bool> delete(Todo todo) async {
-  //   await init;
-  //   final int rowsDeleted = await database.delete(
-  //     'todos',
-  //     where: 'id = ?',
-  //     whereArgs: [todo.id],
-  //   );
-  //   return rowsDeleted > 0;
-  // }
-
-  // @override
-  // Future<bool> edit(Todo todo) async {
-  //   await init;
-  //   final int rowsUpdated = await database.update(
-  //     'todos',
-  //     todo.toMap(),
-  //     where: 'id = ?',
-  //     whereArgs: [todo.id],
-  //   );
-  //   return rowsUpdated > 0;
-  // }
-
-  // @override
-  // Future<Todo> read(String id) async {
-  //   await init;
-  //   List<Map<String, dynamic>> maps = await database.query(
-  //     'todos',
-  //     where: 'id = ?',
-  //     whereArgs: [id],
-  //   );
-
-  //   if (maps.isEmpty) {
-  //     return Todo(name: "", description: "", dateCreated: "");
-  //   }
-
-  //   Map<String, dynamic> todoMap = maps.first;
-  //   return Todo(
-  //     internalID: todoMap['id'],
-  //     name: todoMap['name'],
-  //     description: todoMap['description'],
-  //     completed: todoMap['completed'] == 1,
-  //     dateCreated: todoMap['dateCreated'],
-  //   );
-  // }
 }

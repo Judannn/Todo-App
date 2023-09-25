@@ -4,9 +4,9 @@ import 'package:test_app/models/todo.dart';
 import 'package:test_app/widgets/edit_form.dart';
 
 class TodoCard extends StatelessWidget {
-  final Todo toDo;
+  final Todo todo;
 
-  const TodoCard({super.key, required this.toDo});
+  const TodoCard({super.key, required this.todo});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class TodoCard extends StatelessWidget {
             context: context,
             builder: (builder) {
               return EditForm(
-                toDo: toDo,
+                todo: todo,
               );
             });
       },
@@ -29,7 +29,9 @@ class TodoCard extends StatelessWidget {
               border: Border(
             left: BorderSide(
               //                   <--- right side
-              color: toDo.completed ? Colors.green : Colors.grey,
+              color: todo.completed
+                  ? const Color(0xff50fa7b)
+                  : const Color.fromARGB(255, 120, 123, 148),
               width: 5.0,
             ),
           )),
@@ -37,27 +39,23 @@ class TodoCard extends StatelessWidget {
               const EdgeInsets.only(top: 5, left: 20, right: 20, bottom: 10),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.only(
-                    top: 0, left: 20, right: 20, bottom: 0),
-                child: Text(toDo.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                todo.name,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 20),
               Expanded(
                 child: Container(
                   alignment: Alignment.topLeft,
-                  child: Text(toDo.description,
+                  child: Text(todo.description,
                       style: Theme.of(context).textTheme.bodySmall),
                 ),
               ),
               const SizedBox(height: 20),
               Container(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                    DateFormat.yMMMEd()
-                        .format(DateTime.parse(toDo.dateCreated)),
+                child: Text(parseDateTime(),
                     style: Theme.of(context).textTheme.labelSmall),
               ),
             ],
@@ -65,5 +63,11 @@ class TodoCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String parseDateTime() {
+    return todo.dateCreated != ""
+        ? DateFormat.yMMMEd().format(DateTime.parse(todo.dateCreated))
+        : "";
   }
 }

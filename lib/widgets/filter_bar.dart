@@ -23,13 +23,19 @@ class _FilterBarState extends State<FilterBar> {
         //     .completeTodo
         //     .toString()),
         // child:
+        // 0xff79c6
         Badge(
           textColor: Colors.white,
-          backgroundColor: const Color(0xff79747E),
+          backgroundColor: const Color(0xff44475a),
           label: Text(Provider.of<TodoList>(context, listen: false)
               .completeTodo
               .toString()),
           child: FilterChip(
+              labelStyle: TextStyle(
+                color:
+                    completeSelected ? const Color(0xff44475a) : Colors.white,
+              ),
+              showCheckmark: false,
               selected: completeSelected,
               onSelected: (bool selected) {
                 setState(() {
@@ -49,12 +55,16 @@ class _FilterBarState extends State<FilterBar> {
         const SizedBox(width: 10),
         Badge(
           textColor: Colors.white,
-          backgroundColor: const Color(0xff79747E),
+          backgroundColor: const Color(0xff44475a),
           label: Text(Provider.of<TodoList>(context, listen: false)
               .incompleteTodo
               .toString()),
           child: FilterChip(
-              iconTheme: IconThemeData(),
+              labelStyle: TextStyle(
+                color:
+                    incompleteSelected ? const Color(0xff44475a) : Colors.white,
+              ),
+              showCheckmark: false,
               selected: incompleteSelected,
               onSelected: (bool selected) {
                 setState(() {
@@ -69,7 +79,7 @@ class _FilterBarState extends State<FilterBar> {
                   }
                 });
               },
-              label: const Text('Incomplete')),
+              label: Text('Incomplete')),
         ),
       ],
     );

@@ -1,29 +1,18 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:test_app/models/hive_todo.dart';
 
-class Todo extends HiveObject {
-  @HiveType(typeId: 0)
-  late String? internalID;
-
-  String get id {
-    if (key != null) return key.toString();
-    return internalID ?? "Not Provided";
-  }
-
-  @HiveType(typeId: 1)
+class Todo {
+  late String id;
   final String name;
-  @HiveType(typeId: 2)
   final String description;
-  @HiveType(typeId: 3)
   final String dateCreated;
-  @HiveType(typeId: 4)
   bool completed;
 
   Todo({
     required this.name,
     required this.description,
     required this.dateCreated,
+    this.id = "",
     this.completed = false,
-    this.internalID = "",
   });
 
   @override
@@ -38,49 +27,25 @@ class Todo extends HiveObject {
       'name': name,
       'description': description,
       'dateCreated': dateCreated,
-      'completed': completed ? 1 : 0,
+      'completed': completed,
     };
   }
 
-  factory Todo.fromMap(Map<String, dynamic> mapData) {
-    bool completed;
+  HiveTodo toHiveTodo() {
+    return HiveTodo(
+        name: name,
+        description: description,
+        dateCreated: dateCreated,
+        completed: completed);
+  }
 
-    if (mapData['completed'] is int) {
-      completed = mapData['completed'] != 0;
-    } else {
-      completed = mapData['completed'] ?? false;
-    }
-
-    Todo todo = Todo(
-        internalID: mapData['id'],
+  factory Todo.fromMap(Map<dynamic, dynamic> mapData) {
+    return Todo(
+        id: mapData['id'],
         name: mapData['name'],
         description: mapData['description'],
-        completed: completed,
-        dateCreated: mapData['dateCreated']);
-    return todo;
-  }
-}
-
-class ToDoAdaptor extends TypeAdapter<Todo> {
-  @override
-  Todo read(BinaryReader reader) {
-    return Todo(
-        internalID: reader.read(),
-        name: reader.read(),
-        description: reader.read(),
-        dateCreated: reader.read(),
-        completed: reader.read());
-  }
-
-  @override
-  int get typeId => 0;
-
-  @override
-  void write(BinaryWriter writer, Todo obj) {
-    writer.write(obj.id);
-    writer.write(obj.name);
-    writer.write(obj.description);
-    writer.write(obj.dateCreated);
-    writer.write(obj.completed);
+        completed: mapData['completed'],
+        dateCreated:
+            mapData.containsKey('dateCreated') ? mapData['dateCreated'] : "");
   }
 }

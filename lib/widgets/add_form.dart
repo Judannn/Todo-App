@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test_app/models/todo.dart';
 
 import '../models/todo_list.dart';
 
@@ -12,21 +13,40 @@ class AddForm extends StatelessWidget {
     TextEditingController descriptionController = TextEditingController();
 
     return AlertDialog(
-      title: const Text('Add To Do'),
+      title: const Text(
+        'Add',
+        style: TextStyle(color: Color(0xffff79c6)),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Column(children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text("Title"),
-            TextFormField(controller: titleController),
+            TextFormField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    filled: true,
+                    fillColor: Color(0xff44475a),
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.white))),
           ]),
-          const SizedBox(height: 50),
+          const SizedBox(height: 30),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text("Note"),
-              TextFormField(controller: descriptionController),
+              TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                      isDense: true,
+                      filled: true,
+                      fillColor: Color(0xff44475a),
+                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: Colors.white))),
             ],
-          )
+          ),
+          const SizedBox(height: 10),
         ],
       ),
       actions: <Widget>[
@@ -41,14 +61,12 @@ class AddForm extends StatelessWidget {
             ),
             child: const Text('Add'),
             onPressed: () {
-              Map<String, dynamic> todoMap = {
-                "name": titleController.text,
-                "description": descriptionController.text,
-                "dateCreated": DateTime.now().toIso8601String(),
-                "completed": false,
-              };
-              Provider.of<TodoList>(context, listen: false).add(todoMap);
-
+              Todo todo = Todo(
+                name: titleController.text,
+                description: descriptionController.text,
+                dateCreated: DateTime.now().toIso8601String(),
+              );
+              Provider.of<TodoList>(context, listen: false).add(todo);
               // Cleanup
               Navigator.pop(context);
               descriptionController.clear();

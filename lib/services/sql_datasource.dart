@@ -22,79 +22,66 @@ class SQLDatasource implements DataSource {
     );
   }
 
+  // if (mapData['completed'] is int) {
+  //   mapData['completed'] = mapData['completed'] == 0 ? false : true;
+  // }
+
+  // // Check
+  // if (mapData['id'] is int) {
+  //   mapData['id'] = mapData['id'].toString();
+  // }
+
   @override
   Future<List<Todo>> browse() async {
-    await init; //wait for init completion before attempting to fetch data
-
+    await init;
     List<Map<String, dynamic>> maps = await database.query('todos');
-    return List.generate(
-        maps.length,
-        (index) => Todo(
-              internalID: maps[index]['id'].toString(),
-              name: maps[index]['name'],
-              description: maps[index]['description'],
-              completed: maps[index]['completed'] == 1 ? true : false,
-              dateCreated: maps[index]['dateCreated'],
-            ));
+
+    return List.generate(maps.length, (index) {
+      // Prep
+      String id;
+      bool completed;
+      Map<String, dynamic> map = maps[index];
+      id = map['id'].toString();
+      completed = map['completed'] == 1 ? true : false;
+
+      // Create Todo
+      return Todo(
+          id: id,
+          name: map['name'],
+          description: map['description'],
+          dateCreated: map['dateCreated'],
+          completed: completed);
+    });
   }
 
   @override
-  Future<Todo> read(String id) async {
+  Future<void> edit(Todo todo) async {
     await init;
-    List<Map<String, dynamic>> maps = await database.query(
-      'todos',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (maps.isEmpty) {
-      return Todo(name: "", description: "", dateCreated: "");
-    }
-
-    Map<String, dynamic> todoMap = maps.first;
-    return Todo(
-      internalID: todoMap['id'],
-      name: todoMap['name'],
-      description: todoMap['description'],
-      completed: todoMap['completed'] == 1,
-      dateCreated: todoMap['dateCreated'],
-    );
-  }
-
-  @override
-  Future<bool> edit(Map<String, dynamic> todoMap) async {
-    await init;
-    Todo todo = Todo(
-        internalID: todoMap['id'],
-        name: todoMap['name'],
-        description: todoMap['description'],
-        completed: todoMap['completed'],
-        dateCreated: todoMap['dateCreated']);
-    final int rowsUpdated = await database.update(
+    Map<String, dynamic> todoMap = todo.toMap();
+    todoMap['completed'] = todo.completed ? 1 : 0;
+    await database.update(
       'todos',
       todo.toMap(),
       where: 'id = ?',
       whereArgs: [todo.id],
     );
-    return rowsUpdated > 0;
   }
 
   @override
-  Future<bool> add(Map<String, dynamic> todoMap) async {
+  Future<void> add(Todo todo) async {
     await init;
+    Map<String, dynamic> todoMap = todo.toMap();
     todoMap.remove('id');
-    final int id = await database.insert('todos', todoMap);
-    return id > 0;
+    await database.insert('todos', todoMap);
   }
 
   @override
-  Future<bool> delete(Map<String, dynamic> todoMap) async {
+  Future<void> delete(Todo todo) async {
     await init;
-    final int rowsDeleted = await database.delete(
+    await database.delete(
       'todos',
       where: 'id = ?',
-      whereArgs: [todoMap['id']],
+      whereArgs: [todo.id],
     );
-    return rowsDeleted > 0;
   }
 }
