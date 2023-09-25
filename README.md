@@ -1,6 +1,6 @@
-# test_app
+# Todo App
 
-A new Flutter project.
+A todo app that can use 3 types of datasources [ api, Hive, SQLite ]
 
 ## Getting Started
 
