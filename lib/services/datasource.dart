@@ -26,7 +26,7 @@ abstract class DataSource {
     } else if (Platform.isFuchsia) {
       return HiveDatasource();
     } else if (Platform.isLinux) {
-      return ApiDatasource();
+      return HiveDatasource();
     } else if (Platform.isWindows) {
       return HiveDatasource();
     } else if (Platform.isMacOS) {
